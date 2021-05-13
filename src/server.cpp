@@ -1,5 +1,11 @@
 #include <server.h>
 
+namespace beast = boost::beast;         // from <boost/beast.hpp>
+namespace http = beast::http;           // from <boost/beast/http.hpp>
+namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
+namespace net = boost::asio;            // from <boost/asio.hpp>
+using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
+
 namespace Server {
 void fail(beast::error_code ec, char const* what)
 {
@@ -125,7 +131,27 @@ void listener::on_accept(beast::error_code ec, tcp::socket socket)
 }
 
 }
-int main()
+int main(int argc, char* argv[])
 {
+
+    const auto address = net::ip::make_address("0.0.0.0");
+    const auto port = static_cast<unsigned short>(8080);
+    const auto threads = 5;
+
+    // create the io_context
+    net::io_context ioc {threads};
+
+    // create and launch a listening port
+    std::make_shared<Server::listener>(ioc, tcp::endpoint{address, port})->run();
+
+    // run the IO service on the requested number of threads
+    std::vector<std::thread> threadBuffer;
+    threadBuffer.reserve(threads - 1);
+    for (auto i = threads - 1; i > 0; --i) {
+        threadBuffer.emplace_back ( [&ioc]() { ioc.run(); });
+    }
+    ioc.run();
+    return EXIT_SUCCESS;
+
     return 0;
 }

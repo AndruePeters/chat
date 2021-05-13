@@ -104,8 +104,20 @@ void session::on_close(beast::error_code ec)
 }
 
 } /// Client
-
+namespace beast = boost::beast;         // from <boost/beast.hpp>
+namespace http = beast::http;           // from <boost/beast/http.hpp>
+namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
+namespace net = boost::asio;            // from <boost/asio.hpp>
+using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 int main()
 {
+    const auto host = "0.0.0.0";
+    const auto port = "8080";
+    const auto text = "new message";
+
+    net::io_context ioc;
+    std::make_shared<Client::session>(ioc)->run(host, port, text);
+
+    ioc.run();
     return 0;
 }
