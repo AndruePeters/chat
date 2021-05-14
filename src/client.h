@@ -35,10 +35,12 @@ class session : public std::enable_shared_from_this<session> {
     websocket::stream <beast::tcp_stream> ws;
     beast::flat_buffer buffer;
     std::string host;
+    std::string port;
     std::string text;
 
 public:
     explicit session(net::io_context& ioc);
+    explicit session(net::io_context& ioc, char const* port, char const* host);
 
     void run(char const* host, char const* port, char const* text);
 

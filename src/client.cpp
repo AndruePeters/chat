@@ -15,6 +15,11 @@ void fail(beast::error_code ec, char const* what)
 
 session::session(net::io_context& ioc) : resolver(net::make_strand(ioc)), ws(net::make_strand(ioc))
 {
+}
+
+session::session(net::io_context& ioc, const char* port, const char* host):
+        resolver(net::make_strand(ioc)), ws(net::make_strand(ioc)), port(port), host(host)
+{
 
 }
 
@@ -103,6 +108,8 @@ void session::on_close(beast::error_code ec)
     std::cout << beast::make_printable(buffer.data()) << std::endl;
 }
 
+
+
 } /// Client
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -116,8 +123,15 @@ int main()
     const auto text = "new message";
 
     net::io_context ioc;
-    std::make_shared<Client::session>(ioc)->run(host, port, text);
 
-    ioc.run();
+    std::string userInput;
+    while (std::getline(std::cin, userInput)) {
+        if (userInput == "quit") {
+            break;
+        }
+        std::make_shared<Client::session>(ioc)->run(host, port, userInput.c_str());
+        ioc.run();
+    }
+
     return 0;
 }
