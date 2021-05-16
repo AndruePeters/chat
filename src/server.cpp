@@ -1,157 +1,66 @@
-#include <server.h>
+#include "listener.h"
+#include "shared_state.h"
 
-namespace beast = boost::beast;         // from <boost/beast.hpp>
-namespace http = beast::http;           // from <boost/beast/http.hpp>
-namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
-namespace net = boost::asio;            // from <boost/asio.hpp>
-using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
+#include <boost/asio/signal_set.hpp>
+#include <boost/smart_ptr.hpp>
+#include <iostream>
+#include <vector>
 
-namespace Server {
-void fail(beast::error_code ec, char const* what)
-{
-    std::cerr << what << ": " << ec.message() << "\n";
-}
+namespace beast     = boost::beast;    // from <boost/beast.hpp>
+namespace http      = beast::http;    // from <boost/beast/http.hpp>
+namespace websocket = beast::websocket;    // from <boost/beast/websocket.hpp>
+namespace net       = boost::asio;    // from <boost/asio.hpp>
+using tcp           = boost::asio::ip::tcp;    // from <boost/asio/ip/tcp.hpp>
 
-session::session(tcp::socket&& socket) : ws(std::move(socket))
-{
-
-}
-
-void session::run()
-{
-    std::cout << "status: run" << std::endl;
-
-    net::dispatch(ws.get_executor(), beast::bind_front_handler(&session::on_run, shared_from_this()));
-}
-
-void session::on_run()
-{
-    std::cout << "status: on_run" << std::endl;
-
-    // set the suggested timeout settings for the websocket
-    ws.set_option( websocket::stream_base::timeout::suggested(beast::role_type::server) );
-    ws.set_option( websocket::stream_base::decorator(
-            [](websocket::response_type& res) {
-                res.set(http::field::server, std::string(BOOST_BEAST_VERSION_STRING) + " websocket-server-async");
-            }));
-
-    ws.async_accept( beast::bind_front_handler(&session::on_accept, shared_from_this()));
-}
-
-void session::on_accept(beast::error_code ec)
-{
-    std::cout << "status: on_accept()" << std::endl;
-    if (ec) return fail(ec, "accept");
-
-    do_read();
-}
-
-void session::do_read()
-{
-    std::cout << "status: do_read()" << std::endl;
-
-    ws.async_read(buffer, beast::bind_front_handler( &session::on_read, shared_from_this()));
-}
-void session::on_read(beast::error_code ec, std::size_t bytes_transferred)
-{
-    std::cout << "status: on_read" << std::endl;
-    boost::ignore_unused(bytes_transferred);
-
-    if (ec == websocket::error::closed) return;
-    if (ec) fail(ec, "read");
-
-    ws.text(ws.got_text());
-    std::cout << beast::make_printable(buffer.data()) << std::endl;
-
-    ws.async_write(buffer.data(), beast::bind_front_handler( &session::on_write, shared_from_this()));
-}
-
-void session::on_write( beast::error_code ec, std::size_t bytes_transferred)
-{
-    std::cout << "status: on_write()" << std::endl;
-    boost::ignore_unused(bytes_transferred);
-
-    if (ec) return fail(ec, "write");
-
-    buffer.consume(buffer.size());
-
-    do_read();
-}
-
-
-listener::listener( net::io_context& ioc, tcp::endpoint endpoint): ioc(ioc), acceptor(ioc)
-{
-    beast::error_code ec;
-
-    acceptor.open(endpoint.protocol(), ec);
-
-    if (ec) {
-        fail(ec, "open");
-        return;
-    }
-
-    acceptor.set_option(net::socket_base::reuse_address(true), ec);
-    if (ec) {
-        fail(ec, "set_option");
-        return;
-    }
-
-    acceptor.bind(endpoint, ec);
-    if (ec) {
-        fail(ec, "bind");
-        return;
-    }
-
-    acceptor.listen( net::socket_base::max_listen_connections, ec);
-    if (ec) {
-        fail(ec, "listen");
-        return;
-    }
-}
-
-void listener::run()
-{
-    do_accept();
-}
-
-void listener::do_accept()
-{
-    acceptor.async_accept(net::make_strand(ioc), beast::bind_front_handler( &listener::on_accept, shared_from_this()));
-}
-
-void listener::on_accept(beast::error_code ec, tcp::socket socket)
-{
-    if (ec) {
-        fail(ec, "accept");
-        return;
-    }
-
-    std::make_shared<session>(std::move(socket))->run();
-    do_accept();
-}
-
-}
 int main(int argc, char* argv[])
 {
-
-    const auto address = net::ip::make_address("0.0.0.0");
-    const auto port = static_cast<unsigned short>(8080);
-    const auto threads = 5;
-
-    // create the io_context
-    net::io_context ioc {threads};
-
-    // create and launch a listening port
-    std::make_shared<Server::listener>(ioc, tcp::endpoint{address, port})->run();
-
-    // run the IO service on the requested number of threads
-    std::vector<std::thread> threadBuffer;
-    threadBuffer.reserve(threads - 1);
-    for (auto i = threads - 1; i > 0; --i) {
-        threadBuffer.emplace_back ( [&ioc]() { ioc.run(); });
+    // Check command line arguments.
+    if (argc != 5) {
+        std::cerr << "Usage: websocket-chat-multi <address> <port> <doc_root> <threads>\n"
+                  << "Example:\n"
+                  << "    websocket-chat-server 0.0.0.0 8080 . 5\n";
+        return EXIT_FAILURE;
     }
-    ioc.run();
-    return EXIT_SUCCESS;
+    auto address       = net::ip::make_address(argv[1]);
+    auto port          = static_cast<unsigned short>(std::atoi(argv[2]));
+    auto doc_root      = argv[3];
+    auto const threads = std::max<int>(1, std::atoi(argv[4]));
 
-    return 0;
+    // The io_context is required for all I/O
+    net::io_context ioc;
+
+    // Create and launch a listening port
+    std::make_shared<Server::listener>(
+      ioc,
+      tcp::endpoint{ address, port },
+      std::make_shared<shared_state>(doc_root))
+      ->run();
+
+    // Capture SIGINT and SIGTERM to perform a clean shutdown
+    net::signal_set signals(ioc, SIGINT, SIGTERM);
+    signals.async_wait(
+      [&ioc](boost::system::error_code const&, int) {
+          // Stop the io_context. This will cause run()
+          // to return immediately, eventually destroying the
+          // io_context and any remaining handlers in it.
+          ioc.stop();
+      });
+
+    // Run the I/O service on the requested number of threads
+    std::vector<std::thread> v;
+    v.reserve(threads - 1);
+    for (auto i = threads - 1; i > 0; --i)
+        v.emplace_back(
+          [&ioc] {
+              ioc.run();
+          });
+    ioc.run();
+
+    // (If we get here, it means we got a SIGINT or SIGTERM)
+
+    // Block until all the threads exit
+    for (auto& t : v)
+        t.join();
+
+    return EXIT_SUCCESS;
 }

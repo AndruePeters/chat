@@ -1,11 +1,12 @@
 //
 // Created by druep on 4/27/2021.
+// Example I kind of what to base off of: https://github.com/boostorg/beast/blob/develop/example/websocket/server/chat-multi/websocket_session.hpp
 //
 
 #ifndef CHAT_CLIENT_H
 #define CHAT_CLIENT_H
 
-#include "message.h"
+//#include "message.h"
 
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
@@ -15,8 +16,8 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <vector>
 
-namespace Client {
 
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
@@ -26,36 +27,5 @@ namespace net = boost::asio;            // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 
-/// report a failure
-void fail(beast::error_code ec, char const* what);
 
-/// Sends a WebSocket message and prints the response
-class session : public std::enable_shared_from_this<session> {
-    tcp::resolver resolver;
-    websocket::stream <beast::tcp_stream> ws;
-    beast::flat_buffer buffer;
-    std::string host;
-    std::string port;
-    std::string text;
-
-public:
-    explicit session(net::io_context& ioc);
-    explicit session(net::io_context& ioc, char const* port, char const* host);
-
-    void run(char const* host, char const* port, char const* text);
-
-    void on_resolve(beast::error_code ec, tcp::resolver::results_type results);
-
-    void on_connect(beast::error_code ec, tcp::resolver::results_type::endpoint_type ep);
-
-    void on_handshake(beast::error_code ec);
-
-    void on_write(beast::error_code ec, std::size_t bytes_transferred);
-
-    void on_read(beast::error_code ec, std::size_t bytes_transferred);
-
-    void on_close(beast::error_code ec);
-};
-
-} /// Client
 #endif //CHAT_CLIENT_H
