@@ -1,24 +1,35 @@
-#include "client.h"
 #include "shared_state.h"
+#include "client.h"
 #include "websocket_session.h"
 
-shared_state::shared_state(std::string doc_root) : doc_root(std::move(doc_root)) {
+#include "message.h"
 
+#include <spdlog/spdlog.h>
+
+shared_state::shared_state(std::string doc_root) : doc_root(std::move(doc_root))
+{
 }
 
-void shared_state::join(websocket_session *session) {
+void shared_state::join(websocket_session* session)
+{
     std::lock_guard<std::mutex> lock(mutex);
     sessions.insert(session);
 }
 
-void shared_state::leave(websocket_session *session) {
+void shared_state::leave(websocket_session* session)
+{
     std::lock_guard<std::mutex> lock(mutex);
     sessions.erase(session);
 }
 
 // broadcast a message to all websocket client sessions
-void shared_state::send(std::string message) {
+void shared_state::send(std::string message)
+{
     const auto ss = std::make_shared<const std::string>(std::move(message));
+    spdlog::info("Incoming JSON string: {}", *ss);
+
+    boost::json::value val = boost::json::parse(*ss);
+    Message msg            = boost::json::value_to<Message>(val);
 
     // make a local list of all the weak pointers representing the sessions so that we an do the
     // actual sending without holding the mutex
@@ -33,8 +44,9 @@ void shared_state::send(std::string message) {
 
     // for each session in our local list, try to acquire a strong pointer. If successful,
     // then send the message on that session
-    for (const auto &wp: v) {
+    for (const auto& wp : v) {
         if (auto strongPointer = wp.lock()) {
+            const auto ss = std::make_shared<const std::string>(msg.message);
             strongPointer->send(ss);
         }
     }
