@@ -25,10 +25,9 @@ void shared_state::leave(websocket_session* session)
 // broadcast a message to all websocket client sessions
 void shared_state::send(std::string message)
 {
-    const auto ss = std::make_shared<const std::string>(std::move(message));
-    spdlog::info("Incoming JSON string: {}", *ss);
+    spdlog::info("Incoming JSON string: {}", message);
 
-    boost::json::value val = boost::json::parse(*ss);
+    boost::json::value val = boost::json::parse(message);
     Message msg            = boost::json::value_to<Message>(val);
 
     // make a local list of all the weak pointers representing the sessions so that we an do the
@@ -42,11 +41,12 @@ void shared_state::send(std::string message)
         }
     }
 
+    const auto ss = std::make_shared<const std::string>(msg.message);
+
     // for each session in our local list, try to acquire a strong pointer. If successful,
     // then send the message on that session
     for (const auto& wp : v) {
         if (auto strongPointer = wp.lock()) {
-            const auto ss = std::make_shared<const std::string>(msg.message);
             strongPointer->send(ss);
         }
     }
