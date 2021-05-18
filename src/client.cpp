@@ -1,8 +1,5 @@
 #include "client.h"
 #include "shared_state.h"
-#include <message.h>
-
-#include <iostream>
 
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>

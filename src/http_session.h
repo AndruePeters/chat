@@ -11,8 +11,10 @@
 #define BOOST_BEAST_EXAMPLE_WEBSOCKET_CHAT_MULTI_HTTP_SESSION_HPP
 
 #include "shared_state.h"
+
 #include <boost/beast.hpp>
 #include <boost/optional.hpp>
+
 #include <cstdlib>
 #include <memory>
 

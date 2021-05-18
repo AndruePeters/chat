@@ -6,14 +6,12 @@
 #ifndef CHAT_CLIENT_H
 #define CHAT_CLIENT_H
 
-//#include "message.h"
-
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/asio/strand.hpp>
+
 #include <cstdlib>
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>

@@ -11,7 +11,8 @@
 
 /// the most basic message
 struct Message {
-    std::string sender;
+    std::string from;
+    std::string to;
     std::string message;
 };
 
@@ -26,7 +27,8 @@ void extract( const boost::json::object& obj, T& t, boost::string_view key )
 void tag_invoke( boost::json::value_from_tag, boost::json::value& jv, const Message& message )
 {
     jv = {
-            { "sender" , message.sender },
+            { "from" , message.from },
+            { "to",    message.to },
             { "message", message.message }
     };
 }
@@ -36,7 +38,8 @@ Message tag_invoke( boost::json::value_to_tag< Message >, boost::json::value con
 {
     Message m;
     boost::json::object const& obj = jv.as_object();
-    extract( obj, m.sender, "sender" );
+    extract( obj, m.from, "from" );
+    extract (obj, m.to, "to");
     extract( obj, m.message, "message" );
     return m;
 }

@@ -10,7 +10,9 @@
 #include "http_session.h"
 #include "websocket_session.h"
 #include <boost/config.hpp>
-#include <iostream>
+
+#include <spdlog/spdlog.h>
+
 
 #define BOOST_NO_CXX14_GENERIC_LAMBDAS
 
@@ -229,7 +231,8 @@ void http_session::fail(beast::error_code ec, char const* what)
     if (ec == net::error::operation_aborted)
         return;
 
-    std::cerr << what << ": " << ec.message() << "\n";
+
+    spdlog::error("{}:{}\n", what, ec.message());
 }
 
 void http_session::do_read()

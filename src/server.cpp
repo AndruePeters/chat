@@ -1,9 +1,11 @@
 #include "listener.h"
 #include "shared_state.h"
 
+#include <spdlog/spdlog.h>
+
 #include <boost/asio/signal_set.hpp>
 #include <boost/smart_ptr.hpp>
-#include <iostream>
+
 #include <vector>
 
 namespace beast     = boost::beast;    // from <boost/beast.hpp>
@@ -16,9 +18,9 @@ int main(int argc, char* argv[])
 {
     // Check command line arguments.
     if (argc != 5) {
-        std::cerr << "Usage: websocket-chat-multi <address> <port> <doc_root> <threads>\n"
-                  << "Example:\n"
-                  << "    websocket-chat-server 0.0.0.0 8080 . 5\n";
+        spdlog::error("Usage: {} <address> <port> <doc_root> <threads>\n"
+          "Example:\n"
+          "    {} 0.0.0.0 8080 . 5\n", argv[0], argv[0]);
         return EXIT_FAILURE;
     }
     auto address       = net::ip::make_address(argv[1]);

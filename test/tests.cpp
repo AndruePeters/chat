@@ -6,9 +6,9 @@
 
 /// let's test serialization with this interesting vector of messages
 const std::vector<Message> messages {
-        {"Sam", "Poop is brown."},
-        {"Sam", "Toe jam is stinky."},
-        {"Drue", "This is not going online."}
+        {"Sam", "Drue", "Poop is brown."},
+        {"Sam", "Drue", "Toe jam is stinky."},
+        {"Drue", "Sam", "This is not going online."}
 };
 
 /// helper method to serialize a message
@@ -19,7 +19,7 @@ std::string serialize(const Message& message)
 
 TEST_CASE("Message Serialization", "[serialize]")
 {
-    REQUIRE( serialize(messages[0])  == R"({"sender":"Sam","message":"Poop is brown."})" );
-    REQUIRE( serialize(messages[1])  == R"({"sender":"Sam","message":"Toe jam is stinky."})" );
-    REQUIRE( serialize(messages[2])  == R"({"sender":"Drue","message":"This is not going online."})" );
+    REQUIRE( serialize(messages[0])  == R"({"from":"Sam","to":"Drue","message":"Poop is brown."})" );
+    REQUIRE( serialize(messages[1])  == R"({"from":"Sam","to":"Drue","message":"Toe jam is stinky."})" );
+    REQUIRE( serialize(messages[2])  == R"({"from":"Drue","to":"Sam","message":"This is not going online."})" );
 }

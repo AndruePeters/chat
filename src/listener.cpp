@@ -1,11 +1,12 @@
 #include "listener.h"
 #include "http_session.h"
-#include <iostream>
+
+#include <spdlog/spdlog.h>
 
 namespace Server {
 
-listener::listener (net::io_context& ioc, tcp::endpoint endpoint, const std::shared_ptr<shared_state>& state)
-    : ioc(ioc), acceptor(ioc), state(state)
+listener::listener(net::io_context& ioc, tcp::endpoint endpoint, const std::shared_ptr<shared_state>& state)
+  : ioc(ioc), acceptor(ioc), state(state)
 {
     beast::error_code ec;
 
@@ -41,15 +42,16 @@ void listener::run()
 {
     // the new connection gets its own strand
     acceptor.async_accept(
-            net::make_strand(ioc),
-            beast::bind_front_handler(
-                    &listener::on_accept, shared_from_this()));
+      net::make_strand(ioc),
+      beast::bind_front_handler(
+        &listener::on_accept, shared_from_this()));
 }
 
 void listener::fail(beast::error_code ec, char const* what)
 {
     if (ec == net::error::operation_aborted) return;
-    std::cerr << what << ": " << ec.message() << "\n";
+
+    spdlog::error("{}:{}", what, ec.message());
 }
 
 void listener::on_accept(beast::error_code ec, tcp::socket socket)
@@ -57,14 +59,12 @@ void listener::on_accept(beast::error_code ec, tcp::socket socket)
     if (ec) {
         return fail(ec, "accept");
     } else {
-        std::make_shared<http_session> ( std::move(socket), state)->run();
+        std::make_shared<http_session>(std::move(socket), state)->run();
     }
 
 
-    acceptor.async_accept( net::make_strand(ioc), beast::bind_front_handler(&listener::on_accept, shared_from_this()) );
+    acceptor.async_accept(net::make_strand(ioc), beast::bind_front_handler(&listener::on_accept, shared_from_this()));
 }
 
 
-
-
-}
+}    // namespace Server
