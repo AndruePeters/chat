@@ -45,20 +45,15 @@ option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
 option(ENABLE_FUZZING "Enable Fuzzing Builds" OFF)
 
-# Very basic PCH example
-option(ENABLE_PCH "Enable Precompiled Headers" OFF)
-if(ENABLE_PCH)
-  # This sets a global PCH parameter, each project will build its own PCH, which is a good idea if any #define's change
-  #
-  # consider breaking this out per project as necessary
-  target_precompile_headers(
-    project_options
-    INTERFACE
-    <vector>
-    <string>
-    <map>
-    <utility>)
-endif()
+find_package(QT NAMES Qt6 COMPONENTS Core Quick REQUIRED PATHS ~/Qt/6.1.0/gcc_64/lib/cmake/ )
+find_package(Qt6 COMPONENTS Core Quick REQUIRED PATHS ~/Qt/6.1.0/gcc_64/lib/cmake/)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set up some extra Conan dependencies based on our needs before loading Conan
 set(CONAN_EXTRA_REQUIRES "")

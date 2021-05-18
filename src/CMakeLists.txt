@@ -9,3 +9,5 @@ target_link_libraries(chat_client PRIVATE pthread CONAN_PKG::spdlog CONAN_PKG::f
 add_executable(chat_server server.cpp listener.cpp http_session.cpp websocket_session.cpp shared_state.cpp )
 target_include_directories(chat_server SYSTEM PRIVATE ${Boost_INCLUDE_DIRS} )
 target_link_libraries(chat_server PRIVATE pthread CONAN_PKG::spdlog CONAN_PKG::fmt)
+
+add_subdirectory(client_ui)
