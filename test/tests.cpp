@@ -11,10 +11,22 @@ const std::vector<Message> messages {
         {"Drue", "Sam", "This is not going online."}
 };
 
+const std::vector<std::string> messageStrings {
+    R"({"from":"Sam","to":"Drue","message":"Poop is brown."})",
+    R"({"from":"Sam","to":"Drue","message":"Toe jam is stinky."})",
+    R"({"from":"Drue","to":"Sam","message":"This is not going online."})"
+};
+
 /// helper method to serialize a message
 std::string serialize(const Message& message)
 {
     return boost::json::serialize ( boost::json::value_from(message) );
+}
+
+Message deserialize(const std::string& str)
+{
+    boost::json::value val = boost::json::parse(str);
+    return boost::json::value_to<Message>(val);
 }
 
 TEST_CASE("Message Serialization", "[serialize]")
@@ -22,4 +34,15 @@ TEST_CASE("Message Serialization", "[serialize]")
     REQUIRE( serialize(messages[0])  == R"({"from":"Sam","to":"Drue","message":"Poop is brown."})" );
     REQUIRE( serialize(messages[1])  == R"({"from":"Sam","to":"Drue","message":"Toe jam is stinky."})" );
     REQUIRE( serialize(messages[2])  == R"({"from":"Drue","to":"Sam","message":"This is not going online."})" );
+}
+
+TEST_CASE("Message Parsing", "[deserialize]")
+{
+    Message m0 = deserialize(messageStrings[0]);
+    Message m1 = deserialize(messageStrings[1]);
+    Message m2 = deserialize(messageStrings[2]);
+
+    REQUIRE( m0 == messages[0] );
+    REQUIRE( m1 == messages[1] );
+    REQUIRE( m2 == messages[2] );
 }
