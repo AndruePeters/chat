@@ -62,7 +62,6 @@ void listener::on_accept(beast::error_code ec, tcp::socket socket)
         std::make_shared<http_session>(std::move(socket), state)->run();
     }
 
-
     acceptor.async_accept(net::make_strand(ioc), beast::bind_front_handler(&listener::on_accept, shared_from_this()));
 }
 
