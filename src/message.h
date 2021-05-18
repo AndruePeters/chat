@@ -14,6 +14,8 @@ struct Message {
     std::string from;
     std::string to;
     std::string message;
+
+    bool operator==(const Message&m1) const = default;
 };
 
 /// Helper function for tag_invoke
