@@ -75,6 +75,7 @@ ApplicationWindow {
             Layout.minimumWidth: messageBoxGrid.Layout.minimumWidth + 30
 
 
+
             GridLayout {
                 id: messageBoxGrid
                 rows: 2
@@ -90,18 +91,36 @@ ApplicationWindow {
         }
 
         GroupBox {
+            id: messageGroupBox
             title: "Message Box"
             Layout.fillWidth: true
             Layout.fillHeight: true
-            TextArea {
-                id: messageContent
+
+            GridLayout {
+                id: messageGrid
+                columns: 2
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
+
+                TextArea {
+                    id: sendMessageData
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: parent.width / 3
+                    text: "Enter message here."
+                }
+
+                TextArea {
+                    id: allMessagesView
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: parent.width / 2
+                    readOnly: true
+                }
             }
+
             Button {
                 text: "submit message"
-                anchors.top: messageContent.bottom
+                anchors.top: messageGrid.bottom
             }
         }
     }
