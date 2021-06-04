@@ -1,23 +1,32 @@
+/// Main controller
+
 #ifndef MAINCONTROLLER_H
 #define MAINCONTROLLER_H
+
+#include <memory>
 
 #include <QObject>
 #include <QString>
 
-namespace cm::controllers {
-class Q_DECL_EXPORT MainController : public QObject {
+#include <controllers/settings_controller.h>
 
-Q_OBJECT
-    Q_PROPERTY( QString ui_welcomeMessage MEMBER welcomeMessage CONSTANT )
+class QQmlApplicationEngine;
 
-public:
-    explicit MainController(QObject *parent = nullptr);
+class Q_DECL_EXPORT MainController : public QObject
+{
+
+    Q_OBJECT
+    Q_PROPERTY(QString ui_welcomeMessage MEMBER welcomeMessage CONSTANT)
+
+  public:
+    explicit MainController(QObject* parent = nullptr);
+    void connectSignalsAndSlots(QObject* root);
     QString welcomeMessage = "This is the MainController";
 
-signals:
+  private:
+    SettingsController* settingsController = nullptr;
 
+  signals:
 };
 
-}
-
-#endif // MAINCONTROLLER_H
+#endif    // MAINCONTROLLER_H

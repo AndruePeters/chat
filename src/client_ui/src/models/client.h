@@ -5,8 +5,8 @@
 
 class CMLIB_EXPORT Client
 {
-public:
+  public:
     Client();
 };
 
-#endif // CLIENT_H
+#endif    // CLIENT_H
