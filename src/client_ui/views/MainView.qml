@@ -1,22 +1,24 @@
+// The main view for the chat client
 
 import QtQuick 2.15
 import QtQuick.Window 
 import QtQuick.Controls
 import QtQuick.Layouts 1.15
-
 import QtQuick.Controls.Material
 
 ApplicationWindow {
     id: appWindow
     Material.theme: Material.Dark
     
-
     visible: true
     title: "Chat Server"
     property int margin: 11
 
-    minimumWidth: mainLayout.Layout.minimumWidth + 2 * margin
-    minimumHeight: mainLayout.Layout.minimumHeight + 2 * margin
+    minimumWidth: Screen.desktopAvailableWidth  / 4
+    minimumHeight: Screen.desktopAvailableHeight / 4
+
+    property SettingsView settingsView: SettingsView {objectName: "settingsView" }
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -32,96 +34,67 @@ ApplicationWindow {
 
         Menu {
             title: "Edit"
-            MenuItem { text: "Preferences" }
+            MenuItem { 
+                text: "Preferences" 
+                onTriggered: settingsView.open()
+            }
         }   
     }
             
-    ColumnLayout {
-        id: mainLayout
-        anchors.fill: parent
-        anchors.margins: appWindow.margin
-
-        GroupBox {
-            id: serverSettings
-            title: "Server Settings"
-            Layout.fillWidth: true
-            Layout.minimumWidth: serverGridLayout.Layout.minimumWidth + 30
-
-            GridLayout {
-                id: serverGridLayout
-                rows: 2
-                flow: GridLayout.TopToBottom
-                anchors.fill: parent
-
-                Label { text: "Address" }
-                Label { text: "Port" }
-
-                TextField {
-                    id:addressBox
-                    Layout.fillWidth: true
-                }
-                TextField {
-                    id:portBox 
-                    Layout.fillWidth: true
-                }
-              }
+    Column {
+        id: sideBar
+        width: parent.width / 5
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            left: parent.left
         }
 
-        GroupBox {
-            id: messageBox
-            title: "Message Settings"
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignTop
-            Layout.minimumWidth: messageBoxGrid.Layout.minimumWidth + 30
-
-
-
-            GridLayout {
-                id: messageBoxGrid
-                rows: 2
-                flow: GridLayout.TopToBottom
-                anchors.fill: parent
-
-                Label { text: "From"}
-                Label { text: "To" }
-
-                TextField { Layout.fillWidth: true }
-                TextField { Layout.fillWidth: true }
+        Item {
+            Rectangle {
+                color: "red"
             }
         }
 
-        GroupBox {
-            id: messageGroupBox
-            title: "Message Box"
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+    }
 
-            GridLayout {
-                id: messageGrid
-                columns: 2
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
+    GroupBox {
+        id: messageGroupBox
+        title: "Message Box"
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        anchors {
+            top: parent.top
+            right: parent.right
+            bottom: parent.bottom
+            left: sideBar.right
+        }
 
-                TextArea {
-                    id: sendMessageData
-                    Layout.fillWidth: true
-                    Layout.preferredWidth: parent.width / 3
-                    text: "Enter message here."
-                }
+        GridLayout {
+            id: messageGrid
+            columns: 2
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
 
-                TextArea {
-                    id: allMessagesView
-                    Layout.fillWidth: true
-                    Layout.preferredWidth: parent.width / 2
-                    readOnly: true
-                }
+            TextArea {
+                id: sendMessageData
+                Layout.fillWidth: true
+                Layout.preferredWidth: parent.width / 3
+                text: "Enter message here."
             }
 
-            Button {
-                text: "submit message"
-                anchors.top: messageGrid.bottom
+            TextArea {
+                id: allMessagesView
+                Layout.fillWidth: true
+                Layout.preferredWidth: parent.width / 2
+                readOnly: true
             }
+        }
+
+        Button {
+            text: "Send"
+            anchors.top: messageGrid.bottom
         }
     }
 }
