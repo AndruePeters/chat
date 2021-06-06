@@ -14,8 +14,8 @@ ApplicationWindow {
     title: "Chat Server"
     property int margin: 11
 
-    minimumWidth: Screen.desktopAvailableWidth  / 4
-    minimumHeight: Screen.desktopAvailableHeight / 4
+    minimumWidth: Screen.desktopAvailableWidth  / 2
+    minimumHeight: Screen.desktopAvailableHeight / 1.5
 
     property SettingsView settingsView: SettingsView {objectName: "settingsView" }
 
@@ -51,8 +51,11 @@ ApplicationWindow {
         }
 
         Item {
+            implicitHeight: parent.height
+            implicitWidth: parent.width
             Rectangle {
                 color: "red"
+                anchors.fill: parent
             }
         }
 
@@ -69,32 +72,44 @@ ApplicationWindow {
             bottom: parent.bottom
             left: sideBar.right
         }
+        
 
-        GridLayout {
+        Column {
             id: messageGrid
-            columns: 2
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
+            anchors.fill: parent
 
-            TextArea {
-                id: sendMessageData
+            Item {
                 Layout.fillWidth: true
-                Layout.preferredWidth: parent.width / 3
-                text: "Enter message here."
+                Layout.preferredWidth: parent.width
+                height: parent.height * 0.80
+                width: parent.width
+
+                Rectangle {
+                    color: "blue"
+                    anchors.fill: parent
+                }
             }
 
-            TextArea {
-                id: allMessagesView
-                Layout.fillWidth: true
-                Layout.preferredWidth: parent.width / 2
-                readOnly: true
-            }
-        }
 
-        Button {
-            text: "Send"
-            anchors.top: messageGrid.bottom
+            Item {
+                Layout.fillWidth: true
+                height: parent.height * 0.2
+                width: parent.width * 1
+
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                TextArea {
+                    id: sendMessageData
+                    width: parent.width
+                    text: "Enter message here."
+                }
+
+                Button {
+                    anchors.top: sendMessageData.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "Send"
+                }
+            }
         }
     }
 }
