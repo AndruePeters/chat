@@ -79,15 +79,44 @@ ApplicationWindow {
             anchors.fill: parent
 
             Item {
-                Layout.fillWidth: true
+                Layout.fillWidth: true  
                 Layout.preferredWidth: parent.width
                 height: parent.height * 0.80
                 width: parent.width
 
                 Rectangle {
-                    color: "blue"
-                    anchors.fill: parent
+                    color: Material.color(Material.Grey, Material.Shade500)
+                    //anchors.fill: parent
                 }
+
+                Column {
+                    Layout.fillHeight: true
+                    width: parent.width
+                    spacing: 10
+
+                    MessageCard {
+                        text: "first message"
+                        role: MessageCard.Role.Sender
+                    }
+
+                    MessageCard {
+                        text: "second message"
+                        role: MessageCard.Role.Receiver
+                    }
+
+                    MessageCard {
+                        text: "This is a really long message.\n\nMultiple newlines............................................................................."
+                        role: MessageCard.Role.Sender
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        color: "pink"
+                        height: 40
+                    }
+                }
+
+
             }
 
 
