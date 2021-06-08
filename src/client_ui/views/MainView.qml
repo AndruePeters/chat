@@ -89,34 +89,42 @@ ApplicationWindow {
                     //anchors.fill: parent
                 }
 
-                Column {
-                    Layout.fillHeight: true
-                    width: parent.width
-                    spacing: 10
-
-                    MessageCard {
-                        text: "first message"
-                        role: MessageCard.Role.Sender
+                
+                ListModel {
+                    id: messageModel                    
+                    ListElement {
+                        roleI: MessageCard.Role.Sender
+                        message: "Hello"
                     }
 
-                    MessageCard {
-                        text: "second message"
-                        role: MessageCard.Role.Receiver
-                    }
-
-                    MessageCard {
-                        text: "This is a really long message.\n\nMultiple newlines............................................................................."
-                        role: MessageCard.Role.Sender
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        color: "pink"
-                        height: 40
+                    ListElement {
+                        roleI: MessageCard.Role.Receiver
+                        message: "Hi! How are you?"
                     }
                 }
 
+                ListView {
+                    id: messageListView
+                    Layout.fillHeight: true
+                    width: parent.width
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    spacing: 20
+                    clip: true
 
+                    model: messageModel
+                    delegate: messageBox
+
+                }
+
+                Component {
+                    id: messageBox
+
+                    MessageCard {
+                        role: roleI
+                        text: message
+                    }
+                }
             }
 
 
