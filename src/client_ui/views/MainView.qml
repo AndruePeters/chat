@@ -135,16 +135,20 @@ ApplicationWindow {
 
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                TextArea {
+                TextField {
                     id: sendMessageData
                     width: parent.width
-                    text: "Enter message here."
+                    placeholderText: "Enter message here."
                 }
 
                 Button {
                     anchors.top: sendMessageData.bottom
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "Send"
+                    onClicked: {
+                        messageModel.append( {"message": sendMessageData.text, "roleI": MessageCard.Role.Receiver});
+                        sendMessageData.text = "";
+                    }
                 }
             }
         }
