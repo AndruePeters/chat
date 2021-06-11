@@ -17,6 +17,9 @@ ApplicationWindow {
     minimumWidth: Screen.desktopAvailableWidth  / 2
     minimumHeight: Screen.desktopAvailableHeight / 1.5
 
+        
+
+
     property SettingsView settingsView: SettingsView {objectName: "settingsView" }
 
     menuBar: MenuBar {
@@ -142,11 +145,14 @@ ApplicationWindow {
                 }
 
                 Button {
+                    objectName: "sendButton"
+                    signal addMessageToModel(message: string)
                     anchors.top: sendMessageData.bottom
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "Send"
                     onClicked: {
                         messageModel.append( {"message": sendMessageData.text, "roleI": MessageCard.Role.Receiver});
+                        addMessageToModel(sendMessageData.text);
                         sendMessageData.text = "";
                     }
                 }

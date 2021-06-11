@@ -23,6 +23,9 @@ class Q_DECL_EXPORT MainController : public QObject
     void connectSignalsAndSlots(QObject* root);
     QString welcomeMessage = "This is the MainController";
 
+  public slots:
+    void onAddMessageToModel(const QString& message);
+
   private:
     SettingsController* settingsController = nullptr;
 

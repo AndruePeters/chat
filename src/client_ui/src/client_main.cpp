@@ -6,6 +6,7 @@
 
 #include <controllers/main_controller.h>
 #include <controllers/settings_controller.h>
+#include <models/messageBoxCppModel.h>
 
 int main(int argc, char* argv[])
 {
@@ -14,6 +15,7 @@ int main(int argc, char* argv[])
     // register the custom C++ types
     qmlRegisterType<MainController>("MainController", 1, 0, "MainController");
     qmlRegisterType<SettingsController>("SettingsController", 1, 0, "SettingsController");
+    qmlRegisterType<ChatModel>("ChatModel", 1, 0, "ChatModel");
 
     // create the engine
     QQmlApplicationEngine engine;
