@@ -16,7 +16,7 @@ MainController::MainController(QObject* parent)
 {
     QObject* settingsView = parent->findChild<QObject*>("settingsView");
     QObject* sendButton = parent->findChild<QObject*>("sendButton");
-    QObject* chatModel = parent->findChild<QObject*>("activeChatModel");
+    activeChatModel = parent->findChild<ActiveChatModel*>("activeChatModel");
 
     if (sendButton == nullptr) {
         qDebug() << "messageModel is sadly nullptr";

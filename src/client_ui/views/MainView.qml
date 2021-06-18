@@ -1,7 +1,7 @@
 // The main view for the chat client
 
 import QtQuick 2.15
-import QtQuick.Window 
+import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material
@@ -12,7 +12,7 @@ import ActiveChatModel 1.0
 ApplicationWindow {
     id: appWindow
     Material.theme: Material.Dark
-    
+
     visible: true
     title: "Chat Server"
     property int margin: 11
@@ -20,7 +20,7 @@ ApplicationWindow {
     minimumWidth: Screen.desktopAvailableWidth  / 2
     minimumHeight: Screen.desktopAvailableHeight / 1.5
 
-        
+
 
 
     property SettingsView settingsView: SettingsView {objectName: "settingsView" }
@@ -46,13 +46,13 @@ ApplicationWindow {
 
         Menu {
             title: "Edit"
-            MenuItem { 
-                text: "Preferences" 
+            MenuItem {
+                text: "Preferences"
                 onTriggered: settingsView.open()
             }
-        }   
+        }
     }
-            
+
     Column {
         id: sideBar
         width: parent.width / 5
@@ -84,14 +84,14 @@ ApplicationWindow {
             bottom: parent.bottom
             left: sideBar.right
         }
-        
+
 
         Column {
             id: messageGrid
             anchors.fill: parent
 
             Item {
-                Layout.fillWidth: true  
+                Layout.fillWidth: true
                 Layout.preferredWidth: parent.width
                 height: parent.height * 0.80
                 width: parent.width
@@ -100,10 +100,10 @@ ApplicationWindow {
                     color: Material.color(Material.Grey, Material.Shade500)
                     //anchors.fill: parent
                 }
-                
+
                 ListModel {
-                    id: messageModel     
-                    objectName: "messageListModel"               
+                    id: messageModel
+                    objectName: "messageListModel"
                 }
 
                 ListView {
@@ -116,17 +116,10 @@ ApplicationWindow {
                    // clip: true
 
                     model: ActiveChatModel { objectName: "activeChatModel"}
-                    delegate: Rectangle {
-                        color: "red"
-                        width: parent.width
-                        height: 50
-                        Text {
-                            //role: MessageCard.Role.Sender
-                            height: 50
-                            width: parent.width
-                            text: "from" +  model.sender  +"\nto: " + model.receiver + "\n" + model.message
+                    delegate: MessageCard {
+                        text: model.message
+                        role: Role.Sender
                         }
-                    }
 
                 }
             }

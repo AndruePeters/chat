@@ -54,8 +54,7 @@ void ActiveChatModel::onAddMessage(Message msg)
     m_data.append(msg);
     endInsertRows();
 
-    beginResetModel();
-    endResetModel();
+
 }
 
 
