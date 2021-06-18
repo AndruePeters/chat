@@ -9,6 +9,8 @@
 #include <QString>
 
 #include <controllers/settings_controller.h>
+#include <controllers/messageController.h>
+#include <models/activeChatModel.h>
 
 class QQmlApplicationEngine;
 
@@ -28,7 +30,8 @@ class Q_DECL_EXPORT MainController : public QObject
 
   private:
     SettingsController* settingsController = nullptr;
-
+    MessageController* messageController = nullptr;
+    ActiveChatModel* activeChatModel = nullptr;
   signals:
 };
 

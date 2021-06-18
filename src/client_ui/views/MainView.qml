@@ -6,6 +6,9 @@ import QtQuick.Controls
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material
 
+import ActiveChatModel 1.0
+
+
 ApplicationWindow {
     id: appWindow
     Material.theme: Material.Dark
@@ -21,6 +24,12 @@ ApplicationWindow {
 
 
     property SettingsView settingsView: SettingsView {objectName: "settingsView" }
+
+    function addMessage(msg: string, role: int) {
+        messageModel.append( {"message": msg, "roleI": role});
+        addMessageToModel(sendMessageData.text);
+        sendMessageData.text = "";
+    }
 
     menuBar: MenuBar {
         Menu {
@@ -91,19 +100,10 @@ ApplicationWindow {
                     color: Material.color(Material.Grey, Material.Shade500)
                     //anchors.fill: parent
                 }
-
                 
                 ListModel {
-                    id: messageModel                    
-                    ListElement {
-                        roleI: MessageCard.Role.Sender
-                        message: "Hello"
-                    }
-
-                    ListElement {
-                        roleI: MessageCard.Role.Receiver
-                        message: "Hi! How are you?"
-                    }
+                    id: messageModel     
+                    objectName: "messageListModel"               
                 }
 
                 ListView {
@@ -113,23 +113,23 @@ ApplicationWindow {
                     anchors.fill: parent
                     anchors.margins: 20
                     spacing: 20
-                    clip: true
+                   // clip: true
 
-                    model: messageModel
-                    delegate: messageBox
-
-                }
-
-                Component {
-                    id: messageBox
-
-                    MessageCard {
-                        role: roleI
-                        text: message
+                    model: ActiveChatModel { objectName: "activeChatModel"}
+                    delegate: Rectangle {
+                        color: "red"
+                        width: parent.width
+                        height: 50
+                        Text {
+                            //role: MessageCard.Role.Sender
+                            height: 50
+                            width: parent.width
+                            text: "from" +  model.sender  +"\nto: " + model.receiver + "\n" + model.message
+                        }
                     }
+
                 }
             }
-
 
             Item {
                 Layout.fillWidth: true
@@ -151,7 +151,7 @@ ApplicationWindow {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "Send"
                     onClicked: {
-                        messageModel.append( {"message": sendMessageData.text, "roleI": MessageCard.Role.Receiver});
+                        //messageModel.append( {"message": sendMessageData.text, "roleI": MessageCard.Role.Receiver});
                         addMessageToModel(sendMessageData.text);
                         sendMessageData.text = "";
                     }

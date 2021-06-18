@@ -6,16 +6,20 @@
 
 #include <controllers/main_controller.h>
 #include <controllers/settings_controller.h>
-#include <models/messageBoxCppModel.h>
+#include <controllers/messageController.h>
+
+#include <models/activeChatModel.h>
 
 int main(int argc, char* argv[])
 {
     QGuiApplication app(argc, argv);
 
     // register the custom C++ types
-    qmlRegisterType<MainController>("MainController", 1, 0, "MainController");
     qmlRegisterType<SettingsController>("SettingsController", 1, 0, "SettingsController");
-    qmlRegisterType<ChatModel>("ChatModel", 1, 0, "ChatModel");
+    qmlRegisterType<MessageController>("MessageController", 1, 0, "MessageController");
+    qmlRegisterType<Message>("Message", 1, 0, "Message");
+    qmlRegisterType<ActiveChatModel>("ActiveChatModel", 1, 0, "ActiveChatModel");
+
 
     // create the engine
     QQmlApplicationEngine engine;
