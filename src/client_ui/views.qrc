@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/views">
+        <file alias="MainView.qml">views/MainView.qml</file>
+        <file alias="SettingsView.qml">views/SettingsView.qml</file>
+        <file alias="MessageCard.qml">views/MessageCard.qml</file>
+    </qresource>
+</RCC>
