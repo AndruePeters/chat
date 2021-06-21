@@ -1,5 +1,5 @@
-#include "client.h"
 #include "shared_state.h"
+#include "client.h"
 
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
