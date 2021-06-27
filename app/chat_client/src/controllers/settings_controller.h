@@ -6,8 +6,6 @@
 
 #include <QObject>
 
-#include <cm-lib_global.h>
-
 class Q_DECL_EXPORT SettingsController : public QObject
 {
     Q_OBJECT
