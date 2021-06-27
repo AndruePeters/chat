@@ -16,10 +16,10 @@ target_include_directories(server_utilities PUBLIC
 )
 
 
-target_link_libraries(server_utilities PUBLIC CONAN_PKG::spdlog CONAN_PKG::fmt)
+target_link_libraries(server_utilities PUBLIC CONAN_PKG::spdlog CONAN_PKG::fmt Qt6::Core CONAN_PKG::nlohmann_json)
 
 
 add_executable(chat_client_cli client.cpp )
 target_include_directories(chat_client_cli SYSTEM PRIVATE ${Boost_INCLUDE_DIRS} )
-target_link_libraries(chat_client_cli PUBLIC server_utilities pthread CONAN_PKG::spdlog CONAN_PKG::fmt)
+target_link_libraries(chat_client_cli PUBLIC server_utilities pthread CONAN_PKG::spdlog CONAN_PKG::fmt CONAN_PKG::nlohmann_json)
 

@@ -20,13 +20,14 @@ const std::vector<std::string> messageStrings {
 /// helper method to serialize a message
 std::string serialize(const Message& message)
 {
-    return boost::json::serialize ( boost::json::value_from(message) );
+    const auto json = to_json(message);
+    return json.dump();
 }
 
 Message deserialize(const std::string& str)
 {
-    boost::json::value val = boost::json::parse(str);
-    return boost::json::value_to<Message>(val);
+    nlohmann::json val = nlohmann::json::parse(str);
+    return to_message(val);
 }
 
 TEST_CASE("Message Serialization", "[serialize]")

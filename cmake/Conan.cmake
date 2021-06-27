@@ -20,6 +20,7 @@ macro(run_conan)
     spdlog/1.5.0
     catch2/2.13.3
     boost/1.75.0
+    nlohmann_json/3.9.1
     OPTIONS
     ${CONAN_EXTRA_OPTIONS}
     BASIC_SETUP

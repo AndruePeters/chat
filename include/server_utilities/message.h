@@ -5,9 +5,8 @@
 #ifndef BEAST_MESSAGE_H
 #define BEAST_MESSAGE_H
 
-#include <boost/json.hpp>
-#include <boost/json/src.hpp>
 #include <string>
+#include <nlohmann/json.hpp>
 
 /// the most basic message
 struct Message {
@@ -18,32 +17,21 @@ struct Message {
     bool operator==(const Message&m1) const = default;
 };
 
-/// Helper function for tag_invoke
-template<class T>
-void extract( const boost::json::object& obj, T& t, boost::string_view key )
+nlohmann::json to_json(const Message& message)
 {
-    t = boost::json::value_to<T>( obj.at( key ) );
-}
-
-/// Serializes a Message object
-void tag_invoke( boost::json::value_from_tag, boost::json::value& jv, const Message& message )
-{
-    jv = {
-            { "from" , message.from },
-            { "to",    message.to },
-            { "message", message.message }
+    return {
+        { "from", message.from },
+        { "to", message.to },
+        { "message", message.message }
     };
 }
 
-/// de-Serializes a json object to Message
-Message tag_invoke( boost::json::value_to_tag< Message >, boost::json::value const& jv )
+Message to_message(const nlohmann::json& j)
 {
-    Message m;
-    boost::json::object const& obj = jv.as_object();
-    extract( obj, m.from, "from" );
-    extract (obj, m.to, "to");
-    extract( obj, m.message, "message" );
-    return m;
+    Message message;
+    message.from = j["from"];
+    message.to = j["to"];
+    message.message = j["message"];
+    return message;
 }
-
 #endif //BEAST_MESSAGE_H
