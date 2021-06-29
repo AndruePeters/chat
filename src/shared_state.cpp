@@ -47,6 +47,7 @@ void shared_state::send(std::string message)
     // then send the message on that session
     for (const auto& wp : v) {
         if (auto strongPointer = wp.lock()) {
+            spdlog::info("Sent message: {}", *ss);
             strongPointer->send(ss);
         }
     }
