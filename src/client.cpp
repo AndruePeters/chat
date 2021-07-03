@@ -19,13 +19,22 @@ session::session(net::io_context& ioc) : resolver(net::make_strand(ioc)), ws(net
 
 void session::run(const char* host, const char* port, const Message& msg)
 {
-    this->host = host;
+    //this->host = host;
     this->msg = msg;
 
     /// what does bind_front_handler actually do?
     resolver.async_resolve(host, port, beast::bind_front_handler(&session::on_resolve, shared_from_this()));
 }
 
+void session::setHost(std::string hst)
+{
+    this->host = std::move(hst);
+}
+
+void session::setPort(std::string prt)
+{
+    this->port = std::move(prt);
+}
 
 void session::on_resolve(beast::error_code ec, tcp::resolver::results_type results)
 {
@@ -118,7 +127,10 @@ int main()
     const Message msg = {"Drue", "Sam", "hello"};
 
     net::io_context ioc;
-    std::make_shared<Client::session>(ioc)->run(host, port, msg);
+    auto wsSession = std::make_shared<Client::session>(ioc); //->run(host, port, msg);
+    wsSession->setHost(host);
+    wsSession->setPort(port);
+    wsSession->run(host, port, msg);
 
     ioc.run();
     return 0;
