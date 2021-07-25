@@ -59,6 +59,7 @@ void websocket_session::on_send(const std::shared_ptr<const std::string>& ss)
 
     // check if we're already writing
     if (queue.size() > 1) {
+        spdlog::info("queue.size() > 1");
         return;
     }
 

@@ -51,8 +51,8 @@ class session : public std::enable_shared_from_this<session>
 
     void send(const std::shared_ptr<const std::string>& ss);
 
-    template<class Body, class Allocator>
-    void run(http::request<Body, http::basic_fields<Allocator>> req);
+    void setHost(std::string host);
+    void setPort(std::string port);
 
     void connect();
 
