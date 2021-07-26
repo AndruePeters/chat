@@ -36,6 +36,7 @@ void websocket_session::on_accept(beast::error_code ec)
 void websocket_session::on_read(beast::error_code ec, std::size_t)
 {
     if (ec) return fail(ec, "read");
+    spdlog::debug("on_read");
 
     // send to all connections
     state->send(beast::buffers_to_string(buffer.data()));
@@ -58,6 +59,7 @@ void websocket_session::on_send(const std::shared_ptr<const std::string>& ss)
 
     // check if we're already writing
     if (queue.size() > 1) {
+        spdlog::info("queue.size() > 1");
         return;
     }
 

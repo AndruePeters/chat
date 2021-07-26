@@ -7,11 +7,11 @@ endif()
 
 add_library(catch_main STATIC catch_main.cpp)
 target_link_libraries(catch_main PUBLIC CONAN_PKG::catch2)
-target_link_libraries(catch_main PRIVATE project_options)
+target_link_libraries(catch_main PRIVATE project_options server_utilities)
 target_include_directories(catch_main SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
 
 add_executable(tests tests.cpp)
-target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
+target_link_libraries(tests PRIVATE project_warnings project_options catch_main server_utilities)
 target_include_directories(tests SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/src ${Boost_INCLUDE_DIRS})
 
 # automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX

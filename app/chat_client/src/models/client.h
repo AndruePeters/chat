@@ -1,9 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "cm-lib_global.h"
-
-class CMLIB_EXPORT Client
+class Client
 {
   public:
     Client();

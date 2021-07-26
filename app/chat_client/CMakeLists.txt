@@ -16,16 +16,16 @@ target_link_libraries(cm-lib INTERFACE ui_controllers ui_models)
 target_compile_definitions(cm-lib INTERFACE CMLIB_LIBRARY)
 
 if(ANDROID)
-    add_library(cm-ui SHARED
+    add_library(chat_client SHARED
             src/main.cpp
             views.qrc
             )
 else()
-    add_executable(cm-ui
+    add_executable(chat_client
             src/client_main.cpp
             views.qrc
             )
 endif()
 
-target_compile_definitions(cm-ui PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(cm-ui PRIVATE Qt6::Core Qt6::Quick Qt6::Qml project_options project_warnings cm-lib)
+target_compile_definitions(chat_client PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
+target_link_libraries(chat_client PRIVATE Qt6::Core Qt6::Quick Qt6::Qml project_options project_warnings cm-lib)

@@ -27,8 +27,8 @@ void shared_state::send(std::string message)
 {
     spdlog::info("Incoming JSON string: {}", message);
 
-    boost::json::value val = boost::json::parse(message);
-    Message msg            = boost::json::value_to<Message>(val);
+    nlohmann::json val = nlohmann::json::parse(message);
+    Message msg  = to_message(val);
 
     // make a local list of all the weak pointers representing the sessions so that we an do the
     // actual sending without holding the mutex
@@ -47,6 +47,7 @@ void shared_state::send(std::string message)
     // then send the message on that session
     for (const auto& wp : v) {
         if (auto strongPointer = wp.lock()) {
+            spdlog::info("Sent message: {}", *ss);
             strongPointer->send(ss);
         }
     }
