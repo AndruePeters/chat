@@ -65,13 +65,18 @@ void session::on_send(const std::shared_ptr<const std::string>& ss)
 
 void session::on_read(beast::error_code ec, std::size_t)
 {
+    using namespace std::chrono_literals;
     if (ec) return fail(ec, "read");
+
+    /// Poll until we get a message
+    while (!ws.is_message_done()) {
+        std::this_thread::sleep_for(10ms);
+    }
+
     spdlog::debug("Read incoming message.");
 
     const std::string msg = beast::buffers_to_string(buffer.data());
     spdlog::info("Received message: {}", msg);
-    buffer.consume(buffer.size());
-
     ws.async_read(buffer, beast::bind_front_handler(&session::on_read, shared_from_this()));
 }
 
@@ -131,6 +136,8 @@ void session::on_connect(beast::error_code ec, tcp::resolver::results_type::endp
 void session::on_handshake(beast::error_code ec)
 {
     if (ec) return fail(ec, "handshake");
+    buffer.consume(buffer.size());
+    net::post(ws.get_executor(), beast::bind_front_handler(&session::on_read, shared_from_this(), ec, 5));
     spdlog::debug("Handshake successful.");
 }
 
