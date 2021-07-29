@@ -3,8 +3,9 @@
 #include <thread>
 
 WebSocketImpl::WebSocketImpl(WebSocket& socketWrapper, net::io_context& ioc, std::string_view host, std::string_view port)
-  : resolver(net::make_strand(ioc)), webSocket(net::make_strand(ioc)), host(host), port(port),
-    onOpenUserHandler(socketWrapper.onOpen), onMessageUserHandler(socketWrapper.onMessage), onCloseUserHandler(socketWrapper.onClose), onErrorUserHandler(socketWrapper.onError)
+  : webSocket(net::make_strand(ioc)),  resolver(net::make_strand(ioc)),
+    onOpenUserHandler(socketWrapper.onOpen), onMessageUserHandler(socketWrapper.onMessage), onCloseUserHandler(socketWrapper.onClose), onErrorUserHandler(socketWrapper.onError),
+    host(host), port(port)
 {
     resolver.async_resolve(host, port, beast::bind_front_handler(&WebSocketImpl::onResolve, shared_from_this()));
 }
@@ -103,8 +104,6 @@ void WebSocketImpl::onRead(beast::error_code ec, std::size_t bytesTransferred)
 }
 
 
-
-
 void WebSocketImpl::onClose(beast::error_code ec)
 {
     // report errors other than close
@@ -118,6 +117,7 @@ void WebSocketImpl::onClose(beast::error_code ec)
     });
 }
 
+
 void WebSocketImpl::onSend(const std::shared_ptr<const std::string>& ss)
 {
     queue.push_back(ss);
@@ -128,6 +128,7 @@ void WebSocketImpl::onSend(const std::shared_ptr<const std::string>& ss)
 
     webSocket.async_write(net::buffer(*queue.front()), beast::bind_front_handler(&WebSocketImpl::onWrite, shared_from_this()));
 }
+
 
 void WebSocketImpl::onWrite(beast::error_code ec, std::size_t bytesTransferred)
 {
@@ -143,6 +144,7 @@ void WebSocketImpl::onWrite(beast::error_code ec, std::size_t bytesTransferred)
     }
 }
 
+
 WebSocket::WebSocket(std::string_view url): webSocketImpl(*this, WebSocket::ioContext, url, "8080")
 {
     std::thread iocRun ( [&]() {
@@ -152,10 +154,12 @@ WebSocket::WebSocket(std::string_view url): webSocketImpl(*this, WebSocket::ioCo
     iocRun.detach();
 }
 
+
 void WebSocket::send(std::string message)
 {
     webSocketImpl.send(std::make_shared<std::string>(message));
 }
+
 
 void WebSocket::close()
 {

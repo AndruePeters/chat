@@ -6,7 +6,7 @@
 namespace Server {
 
 listener::listener(net::io_context& ioc, tcp::endpoint endpoint, const std::shared_ptr<shared_state>& state)
-  : ioc(ioc), acceptor(ioc), state(state)
+  : ioc(ioc), acceptor(ioc), state_(state)
 {
     beast::error_code ec;
 
@@ -59,7 +59,7 @@ void listener::on_accept(beast::error_code ec, tcp::socket socket)
     if (ec) {
         return fail(ec, "accept");
     } else {
-        std::make_shared<http_session>(std::move(socket), state)->run();
+        std::make_shared<http_session>(std::move(socket), state_)->run();
     }
 
     acceptor.async_accept(net::make_strand(ioc), beast::bind_front_handler(&listener::on_accept, shared_from_this()));

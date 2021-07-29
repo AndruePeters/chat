@@ -13,13 +13,13 @@ void fail(beast::error_code ec, char const* what)
 }
 
 websocket_session::websocket_session(tcp::socket&& socket, const std::shared_ptr<shared_state>& state)
-  : ws(std::move(socket)), state(state)
+  : ws(std::move(socket)), state_(state)
 {
 }
 
 websocket_session::~websocket_session()
 {
-    state->leave(this);
+    state_->leave(this);
 }
 
 
@@ -27,7 +27,7 @@ void websocket_session::on_accept(beast::error_code ec)
 {
     if (ec) return fail(ec, "accept");
 
-    state->join(this);
+    state_->join(this);
 
     ws.async_read(buffer, beast::bind_front_handler(&websocket_session::on_read, shared_from_this()));
 }
@@ -39,7 +39,7 @@ void websocket_session::on_read(beast::error_code ec, std::size_t)
     spdlog::debug("on_read");
 
     // send to all connections
-    state->send(beast::buffers_to_string(buffer.data()));
+    state_->send(beast::buffers_to_string(buffer.data()));
 
     buffer.consume(buffer.size());
 

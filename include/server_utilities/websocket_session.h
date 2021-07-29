@@ -33,7 +33,7 @@ class websocket_session : public std::enable_shared_from_this<websocket_session>
 {
     beast::flat_buffer buffer;
     websocket::stream<beast::tcp_stream> ws;
-    std::shared_ptr<shared_state> state;
+    std::shared_ptr<shared_state> state_;
     std::vector<std::shared_ptr<const std::string>> queue;
 
   public:
