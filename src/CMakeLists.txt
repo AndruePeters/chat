@@ -1,7 +1,7 @@
 
 set (CMAKE_INCLUDE_CURRENT_DIR  ON)
 
-add_library(server_utilities STATIC http_session.cpp shared_state.cpp websocket_session.cpp listener.cpp)
+add_library(server_utilities STATIC http_session.cpp shared_state.cpp websocket_session.cpp listener.cpp websocket.cpp)
 
 target_include_directories(server_utilities PUBLIC
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/server_utilities>
