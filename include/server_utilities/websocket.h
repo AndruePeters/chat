@@ -42,7 +42,8 @@ struct ErrorEvent {
 };
 
 class WebSocketImpl : public std::enable_shared_from_this<WebSocketImpl> {
-  private:
+    friend class WebSocket;
+
     beast::flat_buffer buffer; // buffer used for messages
     websocket::stream<beast::tcp_stream> webSocket; // our websocket stream
     std::vector<std::shared_ptr<const std::string>> queue; // send message queue
@@ -65,6 +66,7 @@ class WebSocketImpl : public std::enable_shared_from_this<WebSocketImpl> {
 
   private:
     void fail(beast::error_code ec, char const* what);
+    void run();
     void onSend(const std::shared_ptr<const std::string>& ss);
     void onRead(beast::error_code ec, std::size_t bytesTransferred);
     void onWrite(beast::error_code ec, std::size_t bytesTransferred);
@@ -77,8 +79,8 @@ class WebSocketImpl : public std::enable_shared_from_this<WebSocketImpl> {
 /// Provides an API to the websocket inspired by JavaScript
 class WebSocket {
 
-    static net::io_context ioContext;
-    WebSocketImpl webSocketImpl;
+    inline static net::io_context ioContext { };
+    std::shared_ptr<WebSocketImpl> webSocketImpl = nullptr;
 
   public:
     std::function<void(OpenEvent&&)> onOpen = [](OpenEvent&&) { };
