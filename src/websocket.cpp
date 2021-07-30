@@ -7,7 +7,7 @@ WebSocketImpl::WebSocketImpl(WebSocket& socketWrapper, net::io_context& ioc, std
     onOpenUserHandler(socketWrapper.onOpen), onMessageUserHandler(socketWrapper.onMessage), onCloseUserHandler(socketWrapper.onClose), onErrorUserHandler(socketWrapper.onError),
     host(host), port(port)
 {
-    resolver.async_resolve(host, port, beast::bind_front_handler(&WebSocketImpl::onResolve, shared_from_this()));
+
 }
 
 void WebSocketImpl::send(const std::shared_ptr<const std::string>& ss)
@@ -37,6 +37,11 @@ void WebSocketImpl::fail(beast::error_code ec, char const* what)
        ErrorEvent ee { ec, what };
        onErrorUserHandler(std::move(ee));
     });
+}
+
+void WebSocketImpl::run()
+{
+    resolver.async_resolve(host, port, beast::bind_front_handler(&WebSocketImpl::onResolve, shared_from_this()));
 }
 
 void WebSocketImpl::onResolve(beast::error_code ec, tcp::resolver::results_type results)
@@ -145,9 +150,11 @@ void WebSocketImpl::onWrite(beast::error_code ec, std::size_t bytesTransferred)
 }
 
 
-WebSocket::WebSocket(std::string_view url): webSocketImpl(*this, WebSocket::ioContext, url, "8080")
+WebSocket::WebSocket(std::string_view url)
 {
-    std::thread iocRun ( [&]() {
+    this->webSocketImpl = std::make_shared<WebSocketImpl>(*this, ioContext, url, "8080");
+    webSocketImpl->run();
+    std::thread iocRun ( [this, url]() {
         ioContext.run();
     });
 
@@ -157,11 +164,11 @@ WebSocket::WebSocket(std::string_view url): webSocketImpl(*this, WebSocket::ioCo
 
 void WebSocket::send(std::string message)
 {
-    webSocketImpl.send(std::make_shared<std::string>(message));
+    webSocketImpl->send(std::make_shared<std::string>(message));
 }
 
 
 void WebSocket::close()
 {
-    webSocketImpl.close();
+    webSocketImpl->close();
 }
