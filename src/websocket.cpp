@@ -94,10 +94,6 @@ void WebSocketImpl::onRead(beast::error_code ec, std::size_t bytesTransferred)
         return fail(ec, "read");
     }
 
-    while (!webSocket.is_message_done()) {
-        std::this_thread::sleep_for(10ms);
-    }
-
     net::post([this] {
         MessageEvent msgEvent { beast::buffers_to_string(this->buffer.data()) };
         onMessageUserHandler(std::move(msgEvent));
