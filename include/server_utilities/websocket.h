@@ -10,6 +10,7 @@
 #include <memory>
 #include <string_view>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <spdlog/spdlog.h>
@@ -79,7 +80,8 @@ class WebSocketImpl : public std::enable_shared_from_this<WebSocketImpl> {
 /// Provides an API to the websocket inspired by JavaScript
 class WebSocket {
 
-    inline static net::io_context ioContext { };
+    net::io_context ioContext { };
+    std::thread ioContextThread { };
     std::shared_ptr<WebSocketImpl> webSocketImpl = nullptr;
 
   public:
@@ -89,6 +91,7 @@ class WebSocket {
     std::function<void(ErrorEvent&&)> onError = [](ErrorEvent&&) { } ;
 
     WebSocket(std::string_view url);
+    ~WebSocket();
 
     void send(std::string message);
 

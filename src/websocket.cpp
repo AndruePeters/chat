@@ -111,6 +111,8 @@ void WebSocketImpl::onRead(beast::error_code ec, std::size_t bytesTransferred)
 
 void WebSocketImpl::onClose(beast::error_code ec)
 {
+    spdlog::info("onClose() was called");
+
     // report errors other than close
     if (ec && ec != websocket::error::closed) {
         return fail(ec, "close");
@@ -154,11 +156,10 @@ WebSocket::WebSocket(std::string_view url)
 {
     this->webSocketImpl = std::make_shared<WebSocketImpl>(*this, ioContext, url, "8080");
     webSocketImpl->run();
-    std::thread iocRun ( [this, url]() {
+    ioContextThread =  std::thread(
+      [this, url]() {
         ioContext.run();
     });
-
-    iocRun.detach();
 }
 
 
@@ -171,4 +172,10 @@ void WebSocket::send(std::string message)
 void WebSocket::close()
 {
     webSocketImpl->close();
+}
+
+WebSocket::~WebSocket()
+{
+    ioContext.stop();
+    ioContextThread.join();
 }

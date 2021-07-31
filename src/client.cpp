@@ -173,7 +173,7 @@ int main()
     };
 
     ws.onClose = [](CloseEvent&& closeEvent) {
-        spdlog::info("Closing the connection.");
+        spdlog::info("Closing the connection.\n");
     };
 
     ws.onOpen = [](OpenEvent&& openEvent) {

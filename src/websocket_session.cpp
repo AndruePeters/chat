@@ -7,7 +7,7 @@
 void fail(beast::error_code ec, char const* what)
 {
     // Don't report these
-    if (ec == net::error::operation_aborted || ec == websocket::error::closed) return;
+    //if (ec == net::error::operation_aborted || ec == websocket::error::closed) return;
 
     spdlog::error("{}:{}", what, ec.message());
 }
