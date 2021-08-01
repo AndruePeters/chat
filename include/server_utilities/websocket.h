@@ -1,6 +1,7 @@
 #ifndef WEBSOCKET_H
 #define WEBSOCKET_H
 
+
 #include <events.h>
 
 #include <boost/asio/strand.hpp>
@@ -18,6 +19,7 @@
 
 #include <spdlog/spdlog.h>
 
+namespace Network::Client {
 
 namespace beast     = boost::beast;    // from <boost/beast.hpp>
 namespace http      = beast::http;    // from <boost/beast/http.hpp>
@@ -28,14 +30,14 @@ using tcp           = boost::asio::ip::tcp;    // from <boost/asio/ip/tcp.hpp>
 class WebSocket;
 
 
-
-class WebSocketImpl : public std::enable_shared_from_this<WebSocketImpl> {
+class WebSocketImpl : public std::enable_shared_from_this<WebSocketImpl>
+{
     friend class WebSocket;
 
-    beast::flat_buffer buffer; // buffer used for messages
-    websocket::stream<beast::tcp_stream> webSocket; // our websocket stream
-    std::vector<std::shared_ptr<const std::string>> queue; // send message queue
-    tcp::resolver resolver; // resolver for the endpoint
+    beast::flat_buffer buffer;    // buffer used for messages
+    websocket::stream<beast::tcp_stream> webSocket;    // our websocket stream
+    std::vector<std::shared_ptr<const std::string>> queue;    // send message queue
+    tcp::resolver resolver;    // resolver for the endpoint
 
   public:
     std::function<void(OpenEvent&&)>& onOpenUserHandler;
@@ -65,17 +67,18 @@ class WebSocketImpl : public std::enable_shared_from_this<WebSocketImpl> {
 };
 
 /// Provides an API to the websocket inspired by JavaScript
-class WebSocket {
+class WebSocket
+{
 
-    net::io_context ioContext { };
-    std::thread ioContextThread { };
+    net::io_context ioContext{};
+    std::thread ioContextThread{};
     std::shared_ptr<WebSocketImpl> webSocketImpl = nullptr;
 
   public:
-    std::function<void(OpenEvent&&)> onOpen = [](OpenEvent&&) { };
-    std::function<void(MessageEvent&&)> onMessage = [](MessageEvent&&) { };
-    std::function<void(CloseEvent&&)> onClose = [](CloseEvent&&) { };
-    std::function<void(ErrorEvent&&)> onError = [](ErrorEvent&&) { } ;
+    std::function<void(OpenEvent&&)> onOpen       = [](OpenEvent&&) {};
+    std::function<void(MessageEvent&&)> onMessage = [](MessageEvent&&) {};
+    std::function<void(CloseEvent&&)> onClose     = [](CloseEvent&&) {};
+    std::function<void(ErrorEvent&&)> onError     = [](ErrorEvent&&) {};
 
     WebSocket(std::string_view url);
     ~WebSocket();
@@ -85,5 +88,5 @@ class WebSocket {
     void close();
 };
 
-
+}
 #endif    //WEBSOCKET_H

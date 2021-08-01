@@ -2,12 +2,13 @@
 
 #include <thread>
 
+namespace Network::Client {
+
 WebSocketImpl::WebSocketImpl(WebSocket& socketWrapper, net::io_context& ioc, std::string_view host, std::string_view port)
-  : webSocket(net::make_strand(ioc)),  resolver(net::make_strand(ioc)),
+  : webSocket(net::make_strand(ioc)), resolver(net::make_strand(ioc)),
     onOpenUserHandler(socketWrapper.onOpen), onMessageUserHandler(socketWrapper.onMessage), onCloseUserHandler(socketWrapper.onClose), onErrorUserHandler(socketWrapper.onError),
     host(host), port(port)
 {
-
 }
 
 void WebSocketImpl::send(const std::shared_ptr<const std::string>& ss)
@@ -26,8 +27,8 @@ void WebSocketImpl::fail(beast::error_code ec, char const* what)
 
     /// Send any other error to the users callback
     net::post(webSocket.get_executor(), [this, ec, what] {
-       ErrorEvent ee { ec, what };
-       onErrorUserHandler(std::move(ee));
+        ErrorEvent ee{ ec, what };
+        onErrorUserHandler(std::move(ee));
     });
 }
 
@@ -43,20 +44,20 @@ void WebSocketImpl::onResolve(beast::error_code ec, tcp::resolver::results_type 
     }
 
     beast::get_lowest_layer(webSocket).expires_after(std::chrono::seconds(30));
-    beast::get_lowest_layer(webSocket).async_connect( results, beast::bind_front_handler(&WebSocketImpl::onConnect, shared_from_this()));
+    beast::get_lowest_layer(webSocket).async_connect(results, beast::bind_front_handler(&WebSocketImpl::onConnect, shared_from_this()));
 }
 
 void WebSocketImpl::onConnect(beast::error_code ec, tcp::resolver::results_type::endpoint_type ep)
 {
     if (ec) {
-        return fail (ec, "connect");
+        return fail(ec, "connect");
     }
 
     beast::get_lowest_layer(webSocket).expires_never();
 
     webSocket.set_option(websocket::stream_base::decorator(
       [](websocket::request_type& req) {
-             req.set(http::field::user_agent, std::string(BOOST_BEAST_VERSION_STRING) );
+          req.set(http::field::user_agent, std::string(BOOST_BEAST_VERSION_STRING));
       }));
 
     host += ':' + std::to_string(ep.port());
@@ -87,7 +88,7 @@ void WebSocketImpl::onRead(beast::error_code ec, std::size_t bytesTransferred)
     }
 
     net::post([this] {
-        MessageEvent msgEvent { beast::buffers_to_string(this->buffer.data()) };
+        MessageEvent msgEvent{ beast::buffers_to_string(this->buffer.data()) };
         onMessageUserHandler(std::move(msgEvent));
     });
 
@@ -107,8 +108,8 @@ void WebSocketImpl::onClose(beast::error_code ec)
     }
 
     net::post(webSocket.get_executor(), [this] {
-       CloseEvent ce;
-       onCloseUserHandler(std::move(ce));
+        CloseEvent ce;
+        onCloseUserHandler(std::move(ce));
     });
 }
 
@@ -133,7 +134,7 @@ void WebSocketImpl::onWrite(beast::error_code ec, std::size_t bytesTransferred)
 
     queue.erase(queue.begin());
 
-    if (! queue.empty() ) {
+    if (!queue.empty()) {
         webSocket.async_write(net::buffer(*queue.front()),
           beast::bind_front_handler(&WebSocketImpl::onWrite, shared_from_this()));
     }
@@ -144,10 +145,10 @@ WebSocket::WebSocket(std::string_view url)
 {
     this->webSocketImpl = std::make_shared<WebSocketImpl>(*this, ioContext, url, "8080");
     webSocketImpl->run();
-    ioContextThread =  std::thread(
+    ioContextThread = std::thread(
       [this, url]() {
-        ioContext.run();
-    });
+          ioContext.run();
+      });
 }
 
 
@@ -166,4 +167,6 @@ WebSocket::~WebSocket()
 {
     ioContext.stop();
     ioContextThread.join();
+}
+
 }
