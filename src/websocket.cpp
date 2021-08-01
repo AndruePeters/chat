@@ -22,15 +22,7 @@ void WebSocketImpl::close()
 
 void WebSocketImpl::fail(beast::error_code ec, char const* what)
 {
-    /// If an operation failed because of closing, then just send the onClose event
-    if (ec == websocket::error::closed) {
-        net::post(webSocket.get_executor(), [this] {
-           CloseEvent ce;
-           onCloseUserHandler(std::move(ce));
-        });
-
-        return;
-    }
+    if (ec == net::error::operation_aborted || ec == websocket::error::closed) return;
 
     /// Send any other error to the users callback
     net::post(webSocket.get_executor(), [this, ec, what] {
