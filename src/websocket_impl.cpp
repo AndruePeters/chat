@@ -23,13 +23,13 @@ void WebSocketImpl::close()
     webSocket.async_close(beast::websocket::close_code::normal, beast::bind_front_handler(&WebSocketImpl::onClose, shared_from_this()));
 }
 
-void WebSocketImpl::fail(beast::error_code ec, char const* what)
+void WebSocketImpl::fail(beast::error_code ec, std::string_view what)
 {
     if (ec == net::error::operation_aborted || ec == websocket::error::closed) return;
 
     /// Send any other error to the users callback
     net::post(webSocket.get_executor(), [this, ec, what] {
-           ErrorEvent ee{ ec, what };
+           ErrorEvent ee{ ec, std::string(what) };
            onErrorUserHandler(std::move(ee));
     });
 }

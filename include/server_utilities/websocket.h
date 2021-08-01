@@ -36,7 +36,7 @@ class WebSocket
     std::function<void(CloseEvent&&)> onClose     = [](CloseEvent&&) {};
     std::function<void(ErrorEvent&&)> onError     = [](ErrorEvent&&) {};
 
-    WebSocket(std::string_view url);
+    WebSocket(std::string_view url, std::string_view port);
     ~WebSocket();
 
     void send(std::string message);

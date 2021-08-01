@@ -23,7 +23,7 @@ int main()
 
 
     /// Create our websocket
-    Network::Client::WebSocket ws(host);
+    Network::Client::WebSocket ws(host, port);
 
     ws.onMessage = [](MessageEvent&& msgEvent) {
         spdlog::info("Message Received: {}", msgEvent.data);

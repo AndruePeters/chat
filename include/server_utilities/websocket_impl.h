@@ -54,7 +54,7 @@ class WebSocketImpl : public std::enable_shared_from_this<WebSocketImpl>
     void close();
 
   private:
-    void fail(beast::error_code ec, char const* what);
+    void fail(beast::error_code ec, std::string_view what);
     void run();
     void onSend(const std::shared_ptr<const std::string>& ss);
     void onRead(beast::error_code ec, std::size_t bytesTransferred);

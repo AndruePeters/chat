@@ -6,9 +6,9 @@
 namespace Network::Client {
 
 
-WebSocket::WebSocket(std::string_view url)
+WebSocket::WebSocket(std::string_view url, std::string_view port)
 {
-    this->webSocketImpl = std::make_shared<WebSocketImpl>(*this, ioContext, url, "8080");
+    this->webSocketImpl = std::make_shared<WebSocketImpl>(*this, ioContext, url, port);
     webSocketImpl->run();
     ioContextThread = std::thread(
       [this, url]() {
