@@ -1,5 +1,4 @@
 #include "shared_state.h"
-#include "client.h"
 #include "websocket_session.h"
 
 #include "message.h"
