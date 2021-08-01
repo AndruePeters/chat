@@ -1,9 +1,12 @@
 #ifndef WEBSOCKET_H
 #define WEBSOCKET_H
 
+#include <events.h>
+
 #include <boost/asio/strand.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
+
 
 #include <cstdlib>
 #include <functional>
@@ -24,23 +27,7 @@ using tcp           = boost::asio::ip::tcp;    // from <boost/asio/ip/tcp.hpp>
 
 class WebSocket;
 
-struct OpenEvent {
 
-};
-
-struct MessageEvent {
-    std::string data;
-};
-
-struct CloseEvent {
-    int reason = 0;
-    int code = 0;
-};
-
-struct ErrorEvent {
-    beast::error_code ec = websocket::error::closed;
-    std::string what { };
-};
 
 class WebSocketImpl : public std::enable_shared_from_this<WebSocketImpl> {
     friend class WebSocket;
