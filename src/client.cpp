@@ -1,20 +1,11 @@
-#include "client.h"
-
 #include <message.h>
+#include <events.h>
 #include <websocket.h>
 
 #include <chrono>
 #include <thread>
 
-
 #include <spdlog/spdlog.h>
-
-
-namespace beast = boost::beast;         // from <boost/beast.hpp>
-namespace http = beast::http;           // from <boost/beast/http.hpp>
-namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
-namespace net = boost::asio;            // from <boost/asio.hpp>
-using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 int main()
 {
@@ -65,6 +56,7 @@ int main()
         }
     });
 
+    std::this_thread::sleep_for(30s);
     messageRepeater.join();
     return 0;
 }
