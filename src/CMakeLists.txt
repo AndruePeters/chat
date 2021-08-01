@@ -32,7 +32,7 @@ endfunction(target_link_libraries_system)
 
 
 
-add_library(server_utilities STATIC http_session.cpp shared_state.cpp websocket_session.cpp listener.cpp websocket.cpp)
+add_library(server_utilities STATIC http_session.cpp shared_state.cpp websocket_session.cpp listener.cpp websocket.cpp websocket_impl.cpp)
 
 target_include_directories(server_utilities PUBLIC
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/server_utilities>
